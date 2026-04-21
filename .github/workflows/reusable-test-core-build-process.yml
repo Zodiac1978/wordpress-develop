@@ -38,7 +38,7 @@ on:
         default: false
 
 env:
-  PUPPETEER_SKIP_DOWNLOAD: ${{ true }}
+  PUPPETEER_SKIP_DOWNLOAD: true
   NODE_OPTIONS: --max-old-space-size=4096
 
 # Disable permissions for all available scopes by default.

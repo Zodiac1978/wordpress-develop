@@ -181,7 +181,7 @@ jobs:
       multisite: ${{ matrix.multisite }}
       memcached: ${{ matrix.memcached }}
       phpunit-config: ${{ matrix.multisite && 'tests/phpunit/multisite.xml' || 'phpunit.xml.dist' }}
-      report: ${{ false }}
+      report: false
 
   #
   # Creates PHPUnit test jobs to test MariaDB and MySQL innovation releases.
@@ -229,7 +229,7 @@ jobs:
       multisite: ${{ matrix.multisite }}
       memcached: ${{ matrix.memcached }}
       phpunit-config: ${{ matrix.multisite && 'tests/phpunit/multisite.xml' || 'phpunit.xml.dist' }}
-      report: ${{ false }}
+      report: false
 
   #
   # Runs the HTML API test group.

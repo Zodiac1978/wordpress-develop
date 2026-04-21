@@ -45,7 +45,7 @@ env:
   LOCAL_DB_VERSION: ${{ inputs.db-version }}
   LOCAL_PHP_MEMCACHED: ${{ inputs.memcached }}
   LOCAL_WP_TESTS_DOMAIN: ${{ inputs.tests-domain }}
-  PUPPETEER_SKIP_DOWNLOAD: ${{ true }}
+  PUPPETEER_SKIP_DOWNLOAD: true
 
 # Disable permissions for all available scopes by default.
 # Any needed permissions should be configured at the job level.

@@ -89,7 +89,7 @@ env:
   LOCAL_PHP_MEMCACHED: ${{ inputs.memcached }}
   LOCAL_WP_TESTS_DOMAIN: ${{ inputs.tests-domain }}
   PHPUNIT_CONFIG: ${{ inputs.phpunit-config }}
-  PUPPETEER_SKIP_DOWNLOAD: ${{ true }}
+  PUPPETEER_SKIP_DOWNLOAD: true
 
 # Disable permissions for all available scopes by default.
 # Any needed permissions should be configured at the job level.
