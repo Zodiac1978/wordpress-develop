@@ -2,7 +2,7 @@
 
 /**
  * @group admin
- * 
+ *
  * @covers ::url_shorten
  */
 class Admin_Includes_Misc_UrlShorten_Test extends WP_UnitTestCase {
