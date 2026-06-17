@@ -679,10 +679,7 @@ function wp_parse_url( $url, $component = -1 ) {
 		$url        = 'placeholder://placeholder' . $url;
 	}
 
-	/*
-	 * PHP 8.5+: Prefer the WHATWG URL parser.
-	 */
-	if ( class_exists( 'Uri\\WhatWg\\Url' ) ) {
+	if ( WP_PARSE_URL_USE_WHATWG ) {
 		$parsed = \Uri\WhatWg\Url::parse( $url );
 
 		// Parsing failure.
@@ -692,48 +689,26 @@ function wp_parse_url( $url, $component = -1 ) {
 
 		$parts = array();
 
-		$scheme = $parsed->getScheme();
-		if ( null !== $scheme ) {
-			$parts['scheme'] = $scheme;
-		}
-
-		$host = $parsed->getAsciiHost();
-		if ( null !== $host ) {
-			$parts['host'] = $host;
-		}
-
-		$port = $parsed->getPort();
-		if ( null !== $port ) {
-			$parts['port'] = $port;
-		}
-
-		$user = $parsed->getUsername();
-		if ( null !== $user ) {
-			$parts['user'] = $user;
-		}
-
-		$pass = $parsed->getPassword();
-		if ( null !== $pass ) {
-			$parts['pass'] = $pass;
-		}
-
-		$path = $parsed->getPath();
-		if ( '' !== $path ) {
-			$parts['path'] = $path;
-		}
-
-		$query = $parsed->getQuery();
-		if ( null !== $query ) {
-			$parts['query'] = $query;
-		}
-
-		$fragment = $parsed->getFragment();
-		if ( null !== $fragment ) {
-			$parts['fragment'] = $fragment;
+		foreach (
+			array(
+				'scheme'   => $parsed->getScheme(),
+				'host'     => $parsed->getAsciiHost(),
+				'port'     => $parsed->getPort(),
+				'user'     => $parsed->getUsername(),
+				'pass'     => $parsed->getPassword(),
+				'path'     => $parsed->getPath(),
+				'query'    => $parsed->getQuery(),
+				'fragment' => $parsed->getFragment(),
+			)
+			as $key => $value
+		) {
+			if ( null !== $value && '' !== $value ) {
+				$parts[ $key ] = $value;
+			}
 		}
 	} else {
 		$parts = parse_url( $url );
-
+		
 		// Parsing failure.
 		if ( false === $parts ) {
 			return false;
