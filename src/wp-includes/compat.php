@@ -384,10 +384,3 @@ if ( ! defined( 'IMAGETYPE_WEBP' ) ) {
 if ( ! defined( 'IMG_WEBP' ) ) {
 	define( 'IMG_WEBP', IMAGETYPE_WEBP ); // phpcs:ignore PHPCompatibility.Constants.NewConstants.imagetype_webpFound
 }
-
-// Set WP_PARSE_URL_USE_WHATWG constant is available in PHP 8.5 or later.
-if ( class_exists( 'Uri\\WhatWg\\Url', false ) ) {
-	define( 'WP_PARSE_URL_USE_WHATWG', true );
-} else {
-	define( 'WP_PARSE_URL_USE_WHATWG', false );
-}

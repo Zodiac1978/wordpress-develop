@@ -666,20 +666,23 @@ function ms_allowed_http_request_hosts( $is_external, $host ) {
  *               doesn't exist in the given URL; a string or - in the case of
  *               PHP_URL_PORT - integer when it does. See parse_url()'s return values.
  */
-function wp_parse_url( $url, $component = -1 ) {
-	$to_unset = array();
-	$url      = (string) $url;
+if ( class_exists( 'Uri\\WhatWg\\Url', false ) ) {
 
-	if ( str_starts_with( $url, '//' ) ) {
-		$to_unset[] = 'scheme';
-		$url        = 'placeholder:' . $url;
-	} elseif ( str_starts_with( $url, '/' ) ) {
-		$to_unset[] = 'scheme';
-		$to_unset[] = 'host';
-		$url        = 'placeholder://placeholder' . $url;
-	}
+	// WHATWG implementation (PHP 8.5+).
+	function wp_parse_url( $url, $component = -1 ) {
 
-	if ( WP_PARSE_URL_USE_WHATWG ) {
+		$to_unset = array();
+		$url      = (string) $url;
+
+		if ( str_starts_with( $url, '//' ) ) {
+			$to_unset[] = 'scheme';
+			$url        = 'placeholder:' . $url;
+		} elseif ( str_starts_with( $url, '/' ) ) {
+			$to_unset[] = 'scheme';
+			$to_unset[] = 'host';
+			$url        = 'placeholder://placeholder' . $url;
+		}
+
 		$parsed = \Uri\WhatWg\Url::parse( $url );
 
 		// Parsing failure.
@@ -706,21 +709,45 @@ function wp_parse_url( $url, $component = -1 ) {
 				$parts[ $key ] = $value;
 			}
 		}
-	} else {
-		$parts = parse_url( $url );
-		
-		// Parsing failure.
-		if ( false === $parts ) {
-			return false;
+
+		// Remove the placeholder values.
+		foreach ( $to_unset as $key ) {
+			unset( $parts[ $key ] );
 		}
-	}
 
-	// Remove the placeholder values.
-	foreach ( $to_unset as $key ) {
-		unset( $parts[ $key ] );
+		return _get_component_from_parsed_url_array( $parts, $component );
 	}
+} else {
 
-	return _get_component_from_parsed_url_array( $parts, $component );
+	// Legacy parse_url implementation.
+	function wp_parse_url( $url, $component = -1 ) {
+
+		$to_unset = array();
+		$url      = (string) $url;
+
+		if ( str_starts_with( $url, '//' ) ) {
+			$to_unset[] = 'scheme';
+			$url        = 'placeholder:' . $url;
+		} elseif ( str_starts_with( $url, '/' ) ) {
+			$to_unset[] = 'scheme';
+			$to_unset[] = 'host';
+			$url        = 'placeholder://placeholder' . $url;
+		}
+
+		$parts = parse_url( $url );
+
+		if ( false === $parts ) {
+			// Parsing failure.
+			return $parts;
+		}
+
+		// Remove the placeholder values.
+		foreach ( $to_unset as $key ) {
+			unset( $parts[ $key ] );
+		}
+
+		return _get_component_from_parsed_url_array( $parts, $component );
+	}
 }
 
 /**
