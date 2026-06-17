@@ -670,20 +670,74 @@ function wp_parse_url( $url, $component = -1 ) {
 	$to_unset = array();
 	$url      = (string) $url;
 
-	if ( '//' === substr( $url, 0, 2 ) ) {
+	if ( str_starts_with( $url, '//' ) ) {
 		$to_unset[] = 'scheme';
 		$url        = 'placeholder:' . $url;
-	} elseif ( '/' === substr( $url, 0, 1 ) ) {
+	} elseif ( str_starts_with( $url, '/' ) ) {
 		$to_unset[] = 'scheme';
 		$to_unset[] = 'host';
 		$url        = 'placeholder://placeholder' . $url;
 	}
 
-	$parts = parse_url( $url );
+	/*
+	 * PHP 8.5+: Prefer the WHATWG URL parser.
+	 */
+	if ( class_exists( 'Uri\\WhatWg\\Url' ) ) {
+		$parsed = \Uri\WhatWg\Url::parse( $url );
 
-	if ( false === $parts ) {
 		// Parsing failure.
-		return $parts;
+		if ( null === $parsed ) {
+			return false;
+		}
+
+		$parts = array();
+
+		$scheme = $parsed->getScheme();
+		if ( null !== $scheme ) {
+			$parts['scheme'] = $scheme;
+		}
+
+		$host = $parsed->getAsciiHost();
+		if ( null !== $host ) {
+			$parts['host'] = $host;
+		}
+
+		$port = $parsed->getPort();
+		if ( null !== $port ) {
+			$parts['port'] = $port;
+		}
+
+		$user = $parsed->getUsername();
+		if ( null !== $user ) {
+			$parts['user'] = $user;
+		}
+
+		$pass = $parsed->getPassword();
+		if ( null !== $pass ) {
+			$parts['pass'] = $pass;
+		}
+
+		$path = $parsed->getPath();
+		if ( '' !== $path ) {
+			$parts['path'] = $path;
+		}
+
+		$query = $parsed->getQuery();
+		if ( null !== $query ) {
+			$parts['query'] = $query;
+		}
+
+		$fragment = $parsed->getFragment();
+		if ( null !== $fragment ) {
+			$parts['fragment'] = $fragment;
+		}
+	} else {
+		$parts = parse_url( $url );
+
+		// Parsing failure.
+		if ( false === $parts ) {
+			return false;
+		}
 	}
 
 	// Remove the placeholder values.
